@@ -1,18 +1,60 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:newflutterproject/Frontend/forgotpasswordpage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
+import 'package:newflutterproject/Frontend/forgotpasswordpage.dart';
+import 'package:newflutterproject/Frontend/faculty_logged_in.dart';
 
-import 'faculty_logged_in.dart'; // Ensure this import statement is correct
+class FacultyLogin extends StatelessWidget {
+  FacultyLogin({Key? key}) : super(key: key);
 
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _email = TextEditingController();
 
-class faculty_login extends StatelessWidget {
-  const faculty_login({Key? key}) : super(key: key);
+  Future<void> loginUser(BuildContext context) async {
+    var url = Uri.parse('http://192.168.56.128:3000/user/register');
+    try {
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "email": _email.text.toString(),
+          "password": _password.text.toString(),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const faculty_logged_in()),
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Login failed. Please check your credentials.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 3,
+          backgroundColor: Colors.redAccent,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } catch (e) {
+      print('Error during login: $e');
+      Fluttertoast.showToast(
+        msg: "An error occurred. Please try again.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 3,
+        backgroundColor: Colors.redAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _password = TextEditingController();
-    final TextEditingController _email = TextEditingController();
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -108,27 +150,21 @@ class faculty_login extends StatelessWidget {
                   ),
                   SizedBox(height: 24),
                   ElevatedButton(
-
                     onPressed: () {
-                      if (_password.text.isEmpty || _email.text.isEmpty){
+                      if (_password.text.isEmpty || _email.text.isEmpty) {
                         Fluttertoast.showToast(
-                            msg: "Credentials are empty",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 10,
-                            backgroundColor: Colors.blueAccent,
-                            textColor: Colors.white,
-                            fontSize: 16.0,);
-                      }
-                      else{
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (
-                              context) => const faculty_logged_in()), // Navigate to the NextPage
+                          msg: "Email and password are required",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 3,
+                          backgroundColor: Colors.blueAccent,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
                         );
+                      } else {
+                        loginUser(context);
                       }
-                      },
-
+                    },
                     child: Text('LOGIN'),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(Colors.purple.shade300),

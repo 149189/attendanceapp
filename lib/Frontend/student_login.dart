@@ -1,16 +1,49 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:newflutterproject/Frontend/forgotpasswordpage.dart';
-import 'package:newflutterproject/Frontend/student_logged_in.dart'; // Ensure this import statement is correct
+import 'package:newflutterproject/Frontend/student_logged_in.dart';
 
 class student_login extends StatelessWidget {
-  const student_login({Key? key}) : super(key: key);
+   student_login({Key? key}) : super(key: key);
+
+  final TextEditingController _password1 = TextEditingController();
+  final TextEditingController _email1 = TextEditingController();
+
+  Future<void> loginUser(BuildContext context) async {
+    var url = Uri.parse('http://localhost:3000/user/enterLogin'); // Replace with your server URL
+    var response = await http.post(
+      url,
+      body: {
+        'email': _email1.text,
+        'password': _password1.text,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Handle successful login
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const StudentLoggedIn()),
+      );
+    } else {
+      // Handle failed login
+      Fluttertoast.showToast(
+        msg: "Login failed. Please check your credentials.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 10,
+        backgroundColor: Colors.redAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _password1 = TextEditingController();
-    final TextEditingController _email1 = TextEditingController();
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -107,7 +140,7 @@ class student_login extends StatelessWidget {
                   SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {
-                      if (_password1.text.isEmpty || _email1.text.isEmpty){
+                      if (_password1.text.isEmpty || _email1.text.isEmpty) {
                         Fluttertoast.showToast(
                           msg: "Credentials are empty",
                           toastLength: Toast.LENGTH_SHORT,
@@ -115,14 +148,10 @@ class student_login extends StatelessWidget {
                           timeInSecForIosWeb: 10,
                           backgroundColor: Colors.blueAccent,
                           textColor: Colors.white,
-                          fontSize: 16.0,);
-                      }
-                      else{
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (
-                              context) => const StudentLoggedIn()), // Navigate to the NextPage
+                          fontSize: 16.0,
                         );
+                      } else {
+                        loginUser(context); // Call function to handle login
                       }
                     },
                     child: Text('LOGIN'),
@@ -146,3 +175,4 @@ class student_login extends StatelessWidget {
     );
   }
 }
+
