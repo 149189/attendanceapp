@@ -43,6 +43,7 @@ dependencies:
   flutter_face_api: ^4.1.1
   image_picker: ^0.8.6
   shared_preferences: ^2.2.3
+  http: ^0.13.6
   
 
 

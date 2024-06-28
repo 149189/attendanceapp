@@ -104,7 +104,7 @@ class PersonaSelectionScreen extends StatelessWidget {
         if (title == 'Student') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const student_login()), // Navigate to the NextPage
+            MaterialPageRoute(builder: (context) =>  student_login()), // Navigate to the NextPage
           );
         } else {
           // Navigate to respective pages for other titles
@@ -112,7 +112,7 @@ class PersonaSelectionScreen extends StatelessWidget {
             case 'Faculty':
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const faculty_login()),
+                MaterialPageRoute(builder: (context) =>  FacultyLogin()),
               );
               break;
             default:
